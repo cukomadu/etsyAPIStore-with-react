@@ -11,12 +11,14 @@ input:focus {
 	border: 5px solid #777; 
 }
 
+/* Main Container Div Styling */
+
 .etsyContainerView {
 	display: flex;
 	flex-direction: column;
 }
 
-/* Main Container Div: Header Div Child Styling - also includes styles for Header children elements */
+/* Header Div Styling including styles for Header child elements */
 
 .header {
 	width: 100%;
@@ -40,10 +42,15 @@ input:focus {
 			border: none;
 			font-size: large;
 			transition: .5s all ease;
+			color: #8b008b;
+		}
+
+		input:focus{
+			color: #8b008b;
 		}
 
 		::-webkit-input-placeholder {
-			color: #8b008b;
+			color: #aaa;
 
 		}
 
@@ -54,7 +61,7 @@ input:focus {
 }
 
 
-/* Main Container Div: NavBar Div Child Styling - also includes styles for NavBar children elements */
+/* NavBar Div Styling including styles for NavBar child elements */
 
 .nav-buttons {
 	flex: 1;
@@ -76,13 +83,13 @@ input:focus {
 }
 
 
-/* Main Container Div: Listings Container Div Child Styling - also includes styles for Listings Container children elements */
+/* Listings Container Div Styling including styles for Listings Container child elements */
 
 .listings-container {
 	/* border: 1px solid #777; */
 	flex: 3;
 	max-width: 100%;
-	margin-left: 10%;
+	padding: 0 5%;
 	display: flex;
 	flex-wrap: wrap;
 
@@ -90,7 +97,6 @@ input:focus {
 			padding: 9px;
 			font-size: small;
 			width: 33%;
-			margin-top: 5%;
 			margin-bottom: 5%;
 			display: inline-block;
 
@@ -98,11 +104,15 @@ input:focus {
 					color: #8b008b;
 					font-size: large;
 				}
+
+				img {
+					width: 100%;
+				}
 		}	
 }
 
 
-/* Main Container Div: Footer Div Child Styling - also includes styles for Footer children elements */
+/* Footer Div Child Styling including styles for Footer child elements */
 .footer {
 	border-top: 1px solid #777;
 	flex: 1;
