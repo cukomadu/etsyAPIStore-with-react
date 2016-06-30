@@ -10,10 +10,10 @@ const etsyApp = function(){
 	//Main Container (Parent Div) that holds all other elements on the page; it has 4 Div Children
 	var EtsyContainerView = React.createClass({
 		render: function(){
-			console.log('here comes this object')
-			console.log(this)
-			console.log('here comes props object')
-			console.log(this.props)
+			//console.log('here comes this object')
+			//console.log(this)
+			//console.log('here comes props object')
+			//console.log(this.props)
 			return (
 						<div className="etsyContainerView">
 							<Header />
@@ -69,8 +69,8 @@ const etsyApp = function(){
 		},
 
 		render: function(){
-			console.log('here comes collection')
-			console.log(this.props.etsyColl)
+			//console.log('here comes collection')
+			//console.log(this.props.etsyColl)
 			return (
 						<div className="listings-container">
 								{this._getJsxArray(this.props.etsyColl.models)} 
@@ -84,13 +84,13 @@ const etsyApp = function(){
 			var ListingCard = React.createClass({
 
 				_handleListingClick: function(evtObj){
-					console.log(evtObj.currentTarget.dataset['lid'])
+					//console.log(evtObj.currentTarget.dataset['lid'])
 					location.hash = `/details/${evtObj.currentTarget.dataset['lid']}`
 				},
 			
 				render:function(){
-					console.log('here comes models')
-					//console.log(this.props.etsyColl.models)
+					//console.log('here comes models')
+					//console.log(this.props.etsyColl.listing)
 					return (
 								<div className="listingCard" data-lid={this.props.listing.get('listing_id')}  onClick={this._handleListingClick}>
 									<img src={this.props.listing.get('Images')[0].url_170x135}  />
@@ -117,6 +117,21 @@ const etsyApp = function(){
 		})
 
 
+	// Single View
+
+	var EtsySingleView = React.createClass({
+		render: function(){
+			console.log(this.props.etsyModel)
+			return (
+						<div className="etsySingleView">
+							<img src={this.props.etsyModel.get('Images')[0].url_170x135}  />
+							<p>{this.props.etsyModel.get('title')}</p>
+							<p>{`$ ${this.props.etsyModel.get('price')}`}</p>
+						</div>
+				)
+		}
+	})
+
 	//::::: BACKBONE APP ROUTER, COLLECTION AND MODELS ::::://
 
 	//Backbone Models
@@ -128,11 +143,18 @@ const etsyApp = function(){
 		//Etsy Single Model
 	var EtsySingleModel = Backbone.Model.extend({
 		url: function(){
+			console.log('here comes listing_id', this.id)
 			return 'https://openapi.etsy.com/v2/listings/' + this.id + '.js'
 		},
+		_includes: 'Images,Shop',
+		_apiKey: '9l87ijwnzalacowcpoicgfsb',
+		parse: function(rawJSON){
+			console.log(rawJSON.results[0])
+			return rawJSON.results[0]
+		},
 
-		initialize: function(){
-			this.id = listing_id
+		initialize: function(listingId){
+			this.id = listingId
 		}
 
 	})
@@ -166,19 +188,19 @@ const etsyApp = function(){
 			'*catchall': 'redirect'
 		},
 
-		showSingleView: function(){
-			console.log('this is Multiview')
+		showSingleView: function(id){
+			console.log('this is Singleview')
 
-			var etsyMultiCollection = new EtsyMultiCollection ()
-			etsyMultiCollection.fetch({
+			var etsySingleModel = new EtsySingleModel (id)
+			etsySingleModel.fetch({
 				dataType: 'jsonp',
 				data: {
-					includes: etsyMultiCollection._includes,
-					api_key: etsyMultiCollection._apiKey
+					includes: etsySingleModel._includes,
+					api_key: etsySingleModel._apiKey
 				}
 				
 			}).then(function(){
-				ReactDOM.render(<EtsyContainerView etsyColl={etsyMultiCollection} />, document.querySelector('.container'))
+				ReactDOM.render(<EtsySingleView etsyModel={etsySingleModel} />, document.querySelector('.container'))
 			})
 		},
 
