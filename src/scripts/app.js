@@ -28,14 +28,26 @@ const etsyApp = function(){
 
 		//First Main Container Div Child - Header
 		var Header = React.createClass({
-		render: function(){
-			return (	
-				  	<div className="header">
-				  		<h1>Etsy</h1>
-				  		<input type="text" placeholder="Search for an Item"/>
-				  	</div>
-				)
-		}
+
+			_handleSearch: function(evtObj){
+				console.log('this is target', evtObj.target)
+				console.log('this is target value', evtObj.target.value)
+				if(evtObj.keyCode === 13){
+					var userInput = evtObj.target.value
+					//console.log(evtObj.target.value)
+					location.hash = "search/" + userInput
+					evtObj.target.value = ''
+				}
+			},
+
+			render: function(){
+				return (	
+					  	<div className="header">
+					  		<a href="#home"><h1>Etsy</h1></a>
+					  		<input type="text" placeholder="Search for an Item" onKeyDown={this._handleSearch}/>
+					  	</div>
+					)
+			}
 		})
 
 		//Second Main Container Div Child - NavBar
@@ -44,11 +56,11 @@ const etsyApp = function(){
 			return (
 					<div className="nav-buttons">
 						<ul className="nav-headings">
-							<li>Home</li>
-							<li>Clothing</li>
-							<li>Jewelry</li>
-							<li>Craft Supplies</li>
-							<li>Wedding</li>
+							<a href="#home"><li>Home</li></a>
+							<a href="#search/clothes"><li>Clothing</li></a>
+							<a href="#search/jewelry"><li>Jewelry</li></a>
+							<a href="#search/craftsupplies"><li>Craft Supplies</li></a>
+							<a href="#search/weddingdress"><li>Wedding</li></a>
 						</ul>
 					</div> 
 
@@ -120,13 +132,22 @@ const etsyApp = function(){
 	// Single View
 
 	var EtsySingleView = React.createClass({
+
 		render: function(){
 			console.log(this.props.etsyModel)
 			return (
-						<div className="etsySingleView">
-							<img src={this.props.etsyModel.get('Images')[0].url_170x135}  />
-							<p>{this.props.etsyModel.get('title')}</p>
-							<p>{`$ ${this.props.etsyModel.get('price')}`}</p>
+						<div className="etsySingleViewContainer">
+							<div className="singleViewHeader">
+				  				<a href="#home"><h1>Etsy</h1></a>
+				  				<input type="text" placeholder="Search for an Item"/>
+				  			</div>
+				  			<div className="etsySingleItemImg">
+								<img src={this.props.etsyModel.get('Images')[0].url_170x135}  />
+							</div>
+							<div className="etsySingleItemDesc">
+								<p>{this.props.etsyModel.get('title')}</p>
+								<p>{`$ ${this.props.etsyModel.get('price')}`}</p>
+							</div>
 						</div>
 				)
 		}
@@ -183,7 +204,7 @@ const etsyApp = function(){
 	var EtsyRouter = Backbone.Router.extend({
 		routes: {
 			'details/:id': 'showSingleView',
-			//'search/:query': 'showSingleView',
+			'search/:query': 'showSearchView',
 			'home': 'showMultiView',
 			'*catchall': 'redirect'
 		},
@@ -215,6 +236,21 @@ const etsyApp = function(){
 				}
 			}).then(function(){
 				ReactDOM.render(<EtsyContainerView etsyColl={etsyHomeCollection} />, document.querySelector('.container'))
+			})
+		},
+
+		showSearchView: function(query){
+			console.log('this is SearchView')
+			var etsySearchCollection = new EtsyMultiCollection ()
+			etsySearchCollection.fetch({
+				dataType: 'jsonp',
+				data: {
+					includes: etsySearchCollection._includes,
+					api_key: etsySearchCollection._apiKey,
+					keywords: query
+				}
+			}).then(function(){
+				ReactDOM.render(<EtsyContainerView etsyColl={etsySearchCollection} />, document.querySelector('.container'))
 			})
 		},
 

@@ -33241,8 +33241,19 @@ var etsyApp = function etsyApp() {
 	var Header = _react2.default.createClass({
 		displayName: 'Header',
 
+		_handleSearch: function _handleSearch(evtObj) {
+			console.log('this is target', evtObj.target);
+			console.log('this is target value', evtObj.target.value);
+			if (evtObj.keyCode === 13) {
+				var userInput = evtObj.target.value;
+				//console.log(evtObj.target.value)
+				location.hash = "search/" + userInput;
+				evtObj.target.value = '';
+			}
+		},
+
 		render: function render() {
-			return _react2.default.createElement('div', { className: 'header' }, _react2.default.createElement('h1', null, 'Etsy'), _react2.default.createElement('input', { type: 'text', placeholder: 'Search for an Item' }));
+			return _react2.default.createElement('div', { className: 'header' }, _react2.default.createElement('a', { href: '#home' }, _react2.default.createElement('h1', null, 'Etsy')), _react2.default.createElement('input', { type: 'text', placeholder: 'Search for an Item', onKeyDown: this._handleSearch }));
 		}
 	});
 
@@ -33251,7 +33262,7 @@ var etsyApp = function etsyApp() {
 		displayName: 'NavBar',
 
 		render: function render() {
-			return _react2.default.createElement('div', { className: 'nav-buttons' }, _react2.default.createElement('ul', { className: 'nav-headings' }, _react2.default.createElement('li', null, 'Home'), _react2.default.createElement('li', null, 'Clothing'), _react2.default.createElement('li', null, 'Jewelry'), _react2.default.createElement('li', null, 'Craft Supplies'), _react2.default.createElement('li', null, 'Wedding')));
+			return _react2.default.createElement('div', { className: 'nav-buttons' }, _react2.default.createElement('ul', { className: 'nav-headings' }, _react2.default.createElement('a', { href: '#home' }, _react2.default.createElement('li', null, 'Home')), _react2.default.createElement('a', { href: '#search/clothes' }, _react2.default.createElement('li', null, 'Clothing')), _react2.default.createElement('a', { href: '#search/jewelry' }, _react2.default.createElement('li', null, 'Jewelry')), _react2.default.createElement('a', { href: '#search/craftsupplies' }, _react2.default.createElement('li', null, 'Craft Supplies')), _react2.default.createElement('a', { href: '#search/weddingdress' }, _react2.default.createElement('li', null, 'Wedding'))));
 		}
 	});
 
@@ -33306,7 +33317,7 @@ var etsyApp = function etsyApp() {
 
 		render: function render() {
 			console.log(this.props.etsyModel);
-			return _react2.default.createElement('div', { className: 'etsySingleView' }, _react2.default.createElement('img', { src: this.props.etsyModel.get('Images')[0].url_170x135 }), _react2.default.createElement('p', null, this.props.etsyModel.get('title')), _react2.default.createElement('p', null, '$ ' + this.props.etsyModel.get('price')));
+			return _react2.default.createElement('div', { className: 'etsySingleViewContainer' }, _react2.default.createElement('div', { className: 'singleViewHeader' }, _react2.default.createElement('a', { href: '#home' }, _react2.default.createElement('h1', null, 'Etsy')), _react2.default.createElement('input', { type: 'text', placeholder: 'Search for an Item' })), _react2.default.createElement('div', { className: 'etsySingleItemImg' }, _react2.default.createElement('img', { src: this.props.etsyModel.get('Images')[0].url_170x135 })), _react2.default.createElement('div', { className: 'etsySingleItemDesc' }, _react2.default.createElement('p', null, this.props.etsyModel.get('title')), _react2.default.createElement('p', null, '$ ' + this.props.etsyModel.get('price'))));
 		}
 	});
 
@@ -33355,7 +33366,7 @@ var etsyApp = function etsyApp() {
 	var EtsyRouter = _backbone2.default.Router.extend({
 		routes: {
 			'details/:id': 'showSingleView',
-			//'search/:query': 'showSingleView',
+			'search/:query': 'showSearchView',
 			'home': 'showMultiView',
 			'*catchall': 'redirect'
 		},
@@ -33387,6 +33398,21 @@ var etsyApp = function etsyApp() {
 				}
 			}).then(function () {
 				_reactDom2.default.render(_react2.default.createElement(EtsyContainerView, { etsyColl: etsyHomeCollection }), document.querySelector('.container'));
+			});
+		},
+
+		showSearchView: function showSearchView(query) {
+			console.log('this is SearchView');
+			var etsySearchCollection = new EtsyMultiCollection();
+			etsySearchCollection.fetch({
+				dataType: 'jsonp',
+				data: {
+					includes: etsySearchCollection._includes,
+					api_key: etsySearchCollection._apiKey,
+					keywords: query
+				}
+			}).then(function () {
+				_reactDom2.default.render(_react2.default.createElement(EtsyContainerView, { etsyColl: etsySearchCollection }), document.querySelector('.container'));
 			});
 		},
 
